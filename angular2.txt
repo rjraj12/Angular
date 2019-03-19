@@ -1,0 +1,136 @@
+ng g c --flat ,--inline-template ,--inline-style,--spec ,--view-encapsulation ,--change-detection
+--flat for not creating folder and going inside it
+and add -d for dry run.
+
+use ng add packageName to add some new files ex ng add @angular/pwa
+ng g @angular/material:material-nav --name nav
+ this will generate one component named nav which will be based on navigation of angular material
+more ex- ng g @angular/material:material-dashboard --name dashboard ,
+          ng g @angular/material:material-tale --name customer-list
+
+for including some other external js files , put it in scripts of angular.json
+
+output path in angular json determines which folder will keep bundle file.
+mainly webpack config files contains - entry and 
+
+webpack analyzer commands- https://github.com/rjraj12/Images/blob/master/webpack-analyzer.png
+
+ng build vs ng build --prod https://github.com/rjraj12/Images/blob/master/buildVsProd%20.png
+
+we can create our own library using
+ng g library libararyName . it will be like new project in workspace. In tsconfig.json LibarayName will
+ be added in paths and in angular.json it will add a new project with LibraryName. 
+we can use library after building only ,so build it using ng build LiarayName --prod.
+
+then if we want to genrate any service in librrary use ,
+ng g s serviceName --project LibraryName and in public_api.ts export it.
+then in any component use it as import {exportName} from "my-lib".
+
+for publish this library to npm ,use
+ng build my-lib --prod
+cd dist/my-lib
+
+angular life cycle from offical angular document and 
+use https://stackoverflow.com/questions/39367423/what-is-data-bound-properties
+https://stackoverflow.com/questions/37962821/what-is-the-difference-between-ngaftercontentinit-and-ngafterviewinit
+npm publish
+
+for webpack see this
+https://medium.com/javascript-training/beginner-s-guide-to-webpack-b1f1a3638460
+
+always perform immutubality and camelCase in angular.
+immutabilty means this.classVaribale.array.push('ram');
+better use this.classVariableArray=ObjectAssign({}, this.classVariable, {array: this.classVariable.array.concat['ram]});
+
+for throwing error
+import { throwError } from 'rxjs';
+import { filter, map, catchError } from 'rxjs/operators';
+And from my http service call I return a function.
+
+return this.http.request(request)
+      .pipe(map((res: Response) => res.json()),
+        catchError((res: Response) => this.onError(res)));
+And in onError function I am returning the error with throwError(error).
+
+onError(res: Response) {
+    const statusCode = res.status;
+    const body = res.json();
+    const error = {
+      statusCode: statusCode,
+      error: body.error
+    };
+    return throwError(error);
+  }
+
+In network down we can see download chunck module.
+Use CamelCase not using _ in angular.
+
+
+dont use pipes genreally or use pure pipes not impure.
+impure pipes gets called many times.
+
+crete core module , shared module , and fetaureed modules
+shared modules contains companents and directivs and pipes for sharing in all.(no service)
+core module like register or login service , navigation component.its should import only in app module.
+
+for using a baseUrl
+Create a new file named baseurl.ts in the shared folder and update its contents as follows:
+export const baseURL = 'http://localhost:3000/';
+then 
+Open AppModule, import baseURL and update the AppModule's providers property of the @NgModule decorator as follows:
+. . .
+import { baseURL } from './shared/baseurl';
+
+
+. . .
+
+providers: [
+  . . .
+  
+               {provide: 'BaseURL', useValue: baseURL}
+ 
+ ]
+ then in any service use it simple as
+import { baseURL } from '../shared/baseurl';
+and baseUrl
+and in component ,use it as in constructor
+ constructor(private dishService: DishService,
+    @Inject('BaseURL') private baseURL) { }
+and in this component.html -> {{ baseURL}}
+
+for handling error in http call:
+create a service
+import { throwError } from 'rxjs';
+
+import { HttpErrorResponse } from '@angular/common/http';
+
+
+
+
+. . .
+
+
+  public handleError(error: HttpErrorResponse | any) {
+   
+ let errMsg: string;
+
+    
+if (error.error instanceof ErrorEvent) {
+    
+  errMsg = error.error.message;
+    } 
+
+else {
+      errMsg = `${error.status} - ${error.statusText || ''} ${error.error}`;
+    }
+
+  
+  
+return throwError(errMsg);
+  }
+
+and in service us it like
+.pipe(map(data:res)=> {} ,catchError(this.processHTTPMsgService.handleError));
+
+for animation in angular=
+https://github.com/rjraj12/Angular/tree/master

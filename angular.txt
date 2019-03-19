@@ -1,0 +1,302 @@
+spa - spa maily fetch major all web apps and assets. then from next click , mainly json data comes.
+lazy loading means loading on demand. when demand comes for that chunck it loads . it imporves the inital page loading. 
+
+ng lint library --format stylish , ng lint library --fix 
+download nodejs, install npm run -g @angular/cli
+   ng new appName --help to see all commands .
+     ng new appName--style = scss --skip-install (skip install wont install npm packages)
+     ng new appName --prefix myapp --skip tests (app component will have myapp as default selector and in angular.json also . and it wont
+     generate .spec.ts files)
+@Ngmodule , @Component take object.they are decorators.these objects are meta datas.
+
+     install angular material
+npm i @angular/cdk , angular material use cdk for compoents.
+    then install angular animations seprately,
+    npm i hammerjs which supports guestuers in angular.
+install npm i @angular/flex-Layout for flex layouts making good in mobile view. no need of external css for this.
+
+for using angular material mat icons, once check < link href = "https://fonts.googleapis.com/icon?family=Material+Icons" rel = "stylesheet" >
+  is present or not in index.html
+
+    < mat - toolbar > </mat-toolbar> for heading in any component.
+the color of angular material can be set in main style.scss using
+@import "../node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css"
+
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+import { MatToolbarModule } from '@angular/material/toolbar';
+
+import { FlexLayoutModule } from '@angular/flex-layout';
+and add them in imports;
+
+we can use mat - list inside a container of flex layout to show a flex list in angular.or mat grid list
+two types of directives - structural and attribute.structrual ex - ngIf, ngFor, ngSwitch
+atrribute - [(ngModel)]
+
+for custom attribute command - ng g directive nameofthedirective
+
+
+
+working of structural directives:
+
+<div * ngIf="movie" > {{ movie.name }}</div>
+Internally, Angular decouples it in two stages.First, it translates the * ngIf=”…” into a template attribute, template = “ngIf …” and then it becomes:
+
+<div template="ngIf movie" > {{ movie.name }}</div>
+Then it translates the template attribute into a < ng - template > element, wrapped around the host element as shown below.
+  
+  < ng - template[ngIf]="movie" >
+
+  <div>
+  {{ movie.name }}
+</div>
+
+  < /ng-template>
+
+example of directive for highlightening color.
+  import { Directive, ElementRef, Input, HostListener } from '@angular/core';
+
+@Directive({
+  selector: '[appHightlight]'
+})
+export class HightlightDirective {
+
+  constructor(private eRef: ElementRef) { }
+
+  @Input() defaultColor: string;
+  @Input('myHighlight') highlightColor: string;
+
+  @HostListener('mouseenter') onMouseEnter() {
+    console.log(this.highlightColor);
+    this.highlight(this.highlightColor || 'red');
+  }
+
+  @HostListener('mouseleave') onMouseLeave() {
+    this.highlight(this.defaultColor || 'black');
+  }
+
+  private highlight(color: string) {
+    this.eRef.nativeElement.style.color = color;
+  }
+
+}
+use it in any component like:
+<p   appHightlight[myHighlight]="color"[defaultColor] = "defaultColor" > Highlight me < /p>
+
+
+note: @HostListener listen for events and then call the corrosponding function ;
+
+ activated route gives us observable of many things.->  https://github.com/rjraj12/Images/blob/master/Screenshot%20(21).png
+
+entry component -Lets say, you have a component called as ModalComponent. To make it more reusable, 
+you would like to pass a component name and expect that component to be rendered inside the ModalComponent*.
+
+for hiding a div instead of ngIf- <div [hidden]="dishes">
+    <mat-spinner></mat-spinner><h4>Loading . . . Please Wait</h4>
+  </div>
+and mat spinner import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
+if we want to return observable of some value , use of 
+import { of } from 'rxjs';
+import { delay } from 'rxjs/operators';(delay for delay the response)
+return of(DISHES.filter((dish) => (dish.id === id))[0]).pipe(delay(2000))
+and if we want promise 
+return of(DISHES.filter((dish) => (dish.id === id))[0]).pipe(delay(2000)).toPrmoise();
+
+just like mat-button in button , we can use matLine in p
+
+
+1. suppose we have a component, InputComponent in which on variable is there  public inputValue;
+
+now we are going to use this component in parent component appComponent so, in app.html
+  < InputComponent[inputValue]="some value" > </InputComponent>
+
+for this @Input() inputValue should be there in InputComponent.
+
+or we can changeName like < InputComponent[inputValue1]="some value" > </InputComponent>
+@Input('inputValue1') inputValue should be there in InputComponent.
+  
+  
+  2. just like document.getElemntById('idname').value, in angular
+InputComponent.html -> <Input #Idvalue type = "text" > </Input>
+
+InputComponent.ts -> @ViewChild('Idvalue') inputValue: ElementRef;
+this.inputValue.nativeElemnt.value.
+  this.inputValue.nativeElement.style.backgroundColor = color
+
+3. FOR event emitter watch this udemy video ->
+  https://www.udemy.com/the-complete-guide-to-angular-2/learn/v4/t/lecture/6656076?start=0
+and same like input, we can change name and bind this. @output('newName')
+
+4. use of < ng - content > </ng-content>
+suppose InputComponent.html < div > <p>it dosent works < /p></div >
+
+  and in app.html  we write something like
+    < InputComponent[inputValue]="some value" > <p>it works ? or not ? </p> </InputComponent >
+
+      then angular will simply igonre < p > it works ? or not ? </p>  but if we add in 
+   InputComponent.html < div > <p>it dosent works < /p> <ng-content></ng - content > </div>
+the final output in app.html will be     it dosent works it works ? or not ?.
+  
+  5.also, [inputValue] = "some value" > <p #paraparentChild > it works ? or not ? </p> </InputComponent >
+   in InputComponent.html - > @ContentChild() contentFromParent: ElementRef;
+
+ngAfterContentInit(){
+  this.contentFromParent.nativeElement.textContent
+}
+
+6. angular component life cycle
+https://www.udemy.com/the-complete-guide-to-angular-2/learn/v4/t/lecture/6656102?start=0
+
+ngonChange excutes when @inuput variable changes
+
+7. < a routerLink = "/server" > </a> or <a [routerLink]="['/user']"></a >(this one if we want to pass some more paramaters like id. ['/user', 2])
+  it will redirect from localhost: 4200 to localhost: 4200 / server
+if we will add, <a routerLink="server" > </a> relative path.
+then it will route from localhost: 4200 / server to localhost: 4200 / server / server.
+so use / server in routerLink.absoluate path.
+we can also use = "../server", it will redirect from localhost: 4200 / anything / anything to localhost: 4200 / anything / server.
+
+we can use routerLinkActive = "active" with [routerLinkActiveOptions] = "{exact:true}" 
+  
+  this.router.navigate(['server']) is same as this.router.navigate(['/server'])
+for relative path add -> this.router.navigate(['server'], { relativeTo: this.router }) where router is 
+  private router: ActivatedRoute in constructor.
+  
+  8. this.route.snapshot.params['id'] for fetching route = "user/:id"(routing module) 
+  
+  its better to use observable here, bcoz in future code may have to wait if no id is passed.so
+this.route.params.subscribe((params: Params) => { params['id'] })
+
+use of switch map is better as it neglects previous id. ex- https://github.com/rjraj12/Images/blob/master/Screenshot%20(22).png
+
+and to route to this place, we can do <a[routerLink]= ['/server', '2345']; (for more like / id / name,
+  use 3rd paramterer here.)
+
+angular will unsubscribe once component destroyed, still we can do it in ngOnDestroy(); 
+  
+  for query paramters and fragments means ? allow = 1#loading(something like that) in url,
+  watch video -> https://www.udemy.com/the-complete-guide-to-angular-2/learn/v4/t/lecture/6656308?start=0
+
+9. and to retrive query parameters and fragment, this.route.snapshot.queryParams, or this.route.queryParams.subscribe(
+  (queryParams: Params) => {
+    queryParams['allowEdit']
+  })
+we can pass any static data through routing to any component like   { path: 'not-found', component: ErrorPageComponent, data: { message: 'Page not found!' } },
+and retrive it like this.errorMessage = this.route.snapshot.data['message']; or
+this.route.data.subscribe(
+  (data: Data) => {
+    this.errorMessage = data['message'];
+  }
+);
+10. if we are using any child component in parent component like ServerEitComponent in server.html
+we can do by simply, <ServiceEditComponent></ServiceEditComponent>. like this no need to change anything in
+  routing.
+
+but we can also use, like < router - outlet > </router-outlet> in server.html to render ServerEditComponent, for
+that in routing we have to do {
+  path = "/server", component: ServerComponent, childern: [{ path: '/:id', component: 'ServerEditComponent' }];
+
+  11. add   { path: '**', component: NotFoundComponent }, for routing any unknown route to not found component.
+  
+  12. AuthService:
+  export class AuthRouteService {
+    loggedIn: boolean = false;
+
+    isAuthenticted() {
+      const promise = new Promise(
+        (resolve, reject) => {
+
+          resolve(this.loggedIn)
+
+
+        }
+      )
+
+      return promise;
+    }
+
+    login() {
+      this.loggedIn = true;
+    }
+    logout() {
+      this.loggedIn = false;
+    }
+  }
+
+  and auth guardService:
+
+  import { Injectable } from "@angular/core";
+  import { CanActivate, CanActivateChild, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from "@angular/router";
+  import { AuthRouteService } from "./auth.service";
+  import { Observable } from "rxjs/Observable"
+
+  @Injectable()
+  export class AuthGuardService implements CanActivate, CanActivateChild {
+
+    constructor(private authService: AuthRouteService, private router: Router) {
+
+    }
+
+    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+
+      return this.authService.isAuthenticted().then(
+        (Authenticted: boolean) => {
+          if (Authenticted)
+            return true;
+          else {
+            alert('please Login');
+            this.router.navigate(['/'])
+          }
+        })
+    }
+
+    canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+      return this.canActivate(route, state);
+    }
+
+
+  }
+  
+  in routing just use  { path: 'login', canActivateChild: [AuthGuardService], component: LoginComponent },
+  and call login and logout function of auth service juust after successfull login and log out.
+  also add these two in app module provider.
+  
+  13. can deactive service(create it in same component)
+
+  import { Observable } from 'rxjs/Observable';
+  import { CanDeactivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+
+  export interface CanComponentDeactivate {
+    canDeactivate: () => Observable<boolean> | Promise<boolean> | boolean;
+  }
+
+  export class CanDeactivateGuard implements CanDeactivate<CanComponentDeactivate> {
+
+    canDeactivate(component: CanComponentDeactivate,
+      currentRoute: ActivatedRouteSnapshot,
+      currentState: RouterStateSnapshot,
+      nextState?: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+      return component.canDeactivate();
+    }
+  }
+
+  and in component.ts
+  canDeactivate(): Observable<boolean>| Promise<boolean>| boolean {
+
+    return confirm('Do you want to discard the changes?') ? true : (console.log(this._route.url), this.Location.go(this._route.url), false);
+
+  }
+  AND in routing add  canDeactivate: [CanDeactivateGuard]. 
+  
+  14. Default value that returns new HttpClient is Object.It automatically calls response.json() internally.
+    you can tell HttpClient what type the response will be, so:
+
+    this.httpClient.get<Timeslot[]>(...)
+      .map((timeSlots) => {
+     ...
+        where timeSlots's type will be Timeslot[]
+  
+  15.array.splice(1, 1)
+      will change the existing array only.(remove 1 element at index 1),
+        array.slice(1, 1) will not change existing array.
